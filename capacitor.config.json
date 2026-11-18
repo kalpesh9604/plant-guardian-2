@@ -1,0 +1,25 @@
+{
+  "appId": "com.plantguardian.app",
+  "appName": "Plant Guardian",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1800,
+      "launchAutoHide": true,
+      "backgroundColor": "#173b2d",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_INSIDE"
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#173b2d"
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_plant_guardian",
+      "iconColor": "#ffffff"
+    }
+  }
+}
