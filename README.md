@@ -78,6 +78,28 @@ npm.cmd run dev
 
 Open `http://localhost:5173`. Vite proxies `/api` requests to `http://127.0.0.1:5000`, avoiding frontend/backend port mismatches in development. If the backend is hosted elsewhere, set `VITE_API_BASE_URL` before building.
 
+## Web deployment (Vercel + Render)
+
+The frontend and API are separate services. The repository includes a Render Blueprint in `render.yaml` for the Express API. It uses `server` as the service root, runs `npm ci` and `npm start`, checks `/api/health`, and mounts a 1 GB persistent disk at `/var/data`. The disk configuration uses Render's paid Starter service plan; review Render's current pricing before creating the service.
+
+### Deploy the API to Render
+
+1. In Render, create a Blueprint instance from this GitHub repository and review the service and disk before confirming creation.
+2. The Blueprint generates `JWT_SECRET` and sets `PLANT_GUARDIAN_DB_PATH` to `/var/data/plantguardian.db`. Render supplies `PORT`.
+3. After the frontend has a Vercel URL, set `CORS_ORIGIN` in the Render service's environment to that exact origin, such as `https://your-project.vercel.app` (no path or trailing slash), then redeploy the API.
+4. To enable Gemini features, add `GEMINI_API_KEY` as a secret environment variable in Render. Do not put it in this repository or in a `VITE_` variable.
+
+The persistent disk keeps the SQLite database across service restarts and deploys, but it is not a backup. Keep one API instance when using SQLite and arrange separate backups for important data. The existing local database is not uploaded or copied by deployment; it remains untouched on this computer.
+
+### Deploy the frontend to Vercel
+
+1. Import the same GitHub repository into Vercel and set the project root to the repository root (`.`).
+2. Use `npm run build` as the build command and `dist` as the output directory.
+3. Add the build-time environment variable `VITE_API_BASE_URL` with the Render service URL ending in `/api`, for example `https://your-api.onrender.com/api`, then deploy.
+4. Copy the Vercel production origin into Render's `CORS_ORIGIN` setting as described above.
+
+The Vercel URL serves the website; the Render URL serves the API. Verify the API at `/api/health`, then test registration, login, and plant data through the Vercel website. A deployment is not complete until both services are live and those checks pass.
+
 ## Android app (Capacitor)
 
 The Android application wraps the existing React/Vite frontend; it does not replace the Express API or bundle Gemini credentials. The app ID is `com.plantguardian.app`.

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: plant-guardian-api
+    runtime: node
+    plan: starter
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PLANT_GUARDIAN_DB_PATH
+        value: /var/data/plantguardian.db
+    disk:
+      name: plant-guardian-sqlite
+      mountPath: /var/data
+      sizeGB: 1
